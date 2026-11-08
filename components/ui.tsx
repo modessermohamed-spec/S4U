@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { Menu, MapPin, ShieldAlert, ShieldCheck, ArrowLeft, ArrowRight, Zap, Wrench, Paintbrush, Hammer, Wind, House, Briefcase, LogIn } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { CATEGORIES, CITIES, CURRENCY, startingPrice, type ProProfile } from "@/lib/data";
+import { CATEGORIES, CITIES, formatPrice, startingPrice, type ProProfile } from "@/lib/data";
 import { VERIFICATION_LABELS, type VerificationStatus } from "@/lib/verification";
 
 const ICONS = { Zap, Wrench, Paintbrush, Hammer, Wind, House } as const;
@@ -119,7 +119,7 @@ export function ProCard({ p }: { p: ProProfile }) {
       <div className="workerFoot">
         <div>
           <small>{price != null ? t("يبدأ من", "From") : t("السعر", "Price")}</small>
-          <strong>{price != null ? `${CURRENCY}${price}` : t("حسب الطلب", "On request")}</strong>
+          <strong>{price != null ? formatPrice(price, ar) : t("حسب الطلب", "On request")}</strong>
         </div>
         <Link className="btnSoft" href={`/pros/${p.id}`}>{t("عرض الملف", "View profile")} <Arrow /></Link>
       </div>

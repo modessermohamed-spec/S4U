@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Plus, Trash2, ImagePlus, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getAuth } from "@/lib/auth";
-import { CATEGORIES, CITIES, CURRENCY, type PricingModel } from "@/lib/data";
+import { CATEGORIES, CITIES, CURRENCY, formatPrice, type PricingModel } from "@/lib/data";
 import { ONBOARDING_STEPS } from "@/lib/verification";
 import { DemoNotice, Field, VerificationBadge } from "@/components/ui";
 import { AccountFields, DemoSuccess, TermsCheckbox, emptyAccount, useAccountValidation, type Errors } from "@/components/forms";
@@ -186,7 +186,7 @@ export default function ProRegister() {
                     <option value="quote">{t("عرض سعر حسب الطلب", "Quote on request")}</option>
                   </select>
                   {s.pricing === "fixed" && (
-                    <input aria-label={t("السعر", "Price")} type="number" inputMode="decimal" min={1} placeholder={CURRENCY} value={s.price} onChange={(e) => updateService(i, { price: e.target.value })} />
+                    <input aria-label={t("السعر", "Price")} type="number" inputMode="numeric" min={1} step={1} placeholder={ar ? CURRENCY.ar : CURRENCY.en} value={s.price} onChange={(e) => updateService(i, { price: e.target.value })} />
                   )}
                   {services.length > 1 && (
                     <button type="button" className="iconBtn" aria-label={t("حذف", "Remove")} onClick={() => setServices(services.filter((_, j) => j !== i))}><Trash2 size={17} /></button>
@@ -244,7 +244,7 @@ export default function ProRegister() {
               </div>
               <p>{about}</p>
               <ul className="serviceList">
-                {services.map((s, i) => <li key={i}><span>{s.name}</span><strong>{s.pricing === "fixed" ? `${CURRENCY}${s.price}` : t("السعر حسب الطلب", "Price on request")}</strong></li>)}
+                {services.map((s, i) => <li key={i}><span>{s.name}</span><strong>{s.pricing === "fixed" ? formatPrice(Number(s.price), ar) : t("السعر حسب الطلب", "Price on request")}</strong></li>)}
               </ul>
               {samples.length > 0 && <div className="sampleGrid small">{samples.map((s) => <div key={s.url} className="sample">{/* eslint-disable-next-line @next/next/no-img-element */}<img src={s.url} alt="" /></div>)}</div>}
               <p className="fieldHint">{t("رقم تلفونك وإيميلك ما بيظهروا في الملف العام.", "Your phone number and email are not shown on your public profile.")}</p>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { MapPin, Briefcase, Image as ImageIcon, Star, Award, CheckCircle2, ArrowLeft, ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { CATEGORIES, CITIES, CURRENCY, type ProProfile } from "@/lib/data";
+import { CATEGORIES, CITIES, formatPrice, type ProProfile } from "@/lib/data";
 import { canAcceptBindingJobs } from "@/lib/verification";
 import { DemoTag, Field, VerificationBadge } from "@/components/ui";
 
@@ -52,7 +52,7 @@ export default function ProfileView({ pro }: { pro: ProProfile }) {
               {pro.services.map((s) => (
                 <li key={s.en}>
                   <span>{ar ? s.ar : s.en}</span>
-                  <strong>{s.pricing === "fixed" && s.price != null ? `${CURRENCY}${s.price}` : t("السعر حسب الطلب", "Price on request")}</strong>
+                  <strong>{s.pricing === "fixed" && s.price != null ? formatPrice(s.price, ar) : t("السعر حسب الطلب", "Price on request")}</strong>
                 </li>
               ))}
             </ul>
@@ -94,7 +94,7 @@ export default function ProfileView({ pro }: { pro: ProProfile }) {
                   <label key={s.en} className={service === s.en ? "chosen" : ""}>
                     <input type="radio" name="service" checked={service === s.en} onChange={() => setService(s.en)} />
                     <span>{ar ? s.ar : s.en}</span>
-                    <strong>{s.pricing === "fixed" && s.price != null ? `${CURRENCY}${s.price}` : t("عرض سعر", "Get quote")}</strong>
+                    <strong>{s.pricing === "fixed" && s.price != null ? formatPrice(s.price, ar) : t("عرض سعر", "Get quote")}</strong>
                   </label>
                 ))}
               </div>
