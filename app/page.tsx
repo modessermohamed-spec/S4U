@@ -1,30 +1,125 @@
- "use client";
-import {useEffect,useMemo,useState} from "react";
-import {Search,MapPin,Star,ShieldCheck,ArrowLeft,ArrowRight,Phone,CheckCircle2,X,Menu,Zap,Wrench,Paintbrush,Hammer,Wind,House} from "lucide-react";
-type Worker={id:number,name:string,ar:string,trade:string,tradeAr:string,area:string,areaAr:string,rating:number,reviews:number,price:number,initials:string,color:string,verified:boolean,services:{en:string,ar:string,price?:number}[]};
-const workers:Worker[]=[
-{id:1,name:"Ahmed Hassan",ar:"أحمد حسن",trade:"Electrician",tradeAr:"كهربائي",area:"Khartoum",areaAr:"الخرطوم",rating:4.9,reviews:32,price:15,initials:"AH",color:"#dcece7",verified:true,services:[{en:"Install a socket",ar:"تركيب مقبس كهربائي",price:15},{en:"House rewiring",ar:"تمديدات كهربائية للمنزل"}]},
-{id:2,name:"Mohamed Ali",ar:"محمد علي",trade:"Plumber",tradeAr:"سباك",area:"Omdurman",areaAr:"أم درمان",rating:4.8,reviews:26,price:12,initials:"MA",color:"#e5eaf8",verified:true,services:[{en:"Fix leaking tap",ar:"إصلاح تسرب صنبور",price:12},{en:"Bathroom renovation",ar:"تجديد الحمام"}]},
-{id:3,name:"Sara Osman",ar:"سارة عثمان",trade:"Painter",tradeAr:"دهان",area:"Bahri",areaAr:"بحري",rating:4.9,reviews:19,price:20,initials:"SO",color:"#fff0d8",verified:true,services:[{en:"Paint one room",ar:"دهان غرفة",price:20},{en:"Full property painting",ar:"دهان منزل كامل"}]},
-{id:4,name:"Yousif Ibrahim",ar:"يوسف إبراهيم",trade:"Carpenter",tradeAr:"نجار",area:"Khartoum",areaAr:"الخرطوم",rating:4.7,reviews:15,price:18,initials:"YI",color:"#f3e6db",verified:false,services:[{en:"Door repair",ar:"إصلاح باب",price:18},{en:"Custom cabinets",ar:"خزائن حسب الطلب"}]},
-{id:5,name:"Khalid Musa",ar:"خالد موسى",trade:"AC Repair",tradeAr:"صيانة تكييف",area:"Omdurman",areaAr:"أم درمان",rating:4.8,reviews:21,price:25,initials:"KM",color:"#d9eef2",verified:true,services:[{en:"AC servicing",ar:"صيانة مكيف",price:25},{en:"AC installation",ar:"تركيب مكيف"}]},
-{id:6,name:"Fatima Adam",ar:"فاطمة آدم",trade:"Construction",tradeAr:"بناء",area:"Bahri",areaAr:"بحري",rating:4.9,reviews:12,price:30,initials:"FA",color:"#e9e2f5",verified:true,services:[{en:"Small masonry repair",ar:"إصلاحات بناء بسيطة",price:30},{en:"Renovation project",ar:"مشروع تجديد"}]}
-];
-const categories=[{en:"Electrician",ar:"كهربائي",Icon:Zap},{en:"Plumber",ar:"سباك",Icon:Wrench},{en:"Painter",ar:"دهان",Icon:Paintbrush},{en:"Carpenter",ar:"نجار",Icon:Hammer},{en:"AC Repair",ar:"صيانة تكييف",Icon:Wind},{en:"Construction",ar:"بناء",Icon:House}];
-export default function Home(){
-const [lang,setLang]=useState<"ar"|"en">("ar"),[category,setCategory]=useState("All"),[query,setQuery]=useState(""),[area,setArea]=useState("All"),[selected,setSelected]=useState<Worker|null>(null),[requested,setRequested]=useState(false),[description,setDescription]=useState(""),[contact,setContact]=useState(""),[service,setService]=useState(""),[menu,setMenu]=useState(false);
-useEffect(()=>{const l=localStorage.getItem("s4u-lang");if(l==="en"||l==="ar")setLang(l)},[]);
-useEffect(()=>{document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";localStorage.setItem("s4u-lang",lang)},[lang]);
-const ar=lang==="ar";
-const t=(a:string,e:string)=>ar?a:e;
-const filtered=useMemo(()=>workers.filter(w=>(category==="All"||w.trade===category)&&(area==="All"||w.area===area)&&(`${w.name} ${w.ar} ${w.trade} ${w.tradeAr} ${w.area} ${w.areaAr}`.toLowerCase().includes(query.toLowerCase()))),[category,area,query]);
-function openWorker(w:Worker){setSelected(w);setRequested(false);setDescription("");setContact("");setService(w.services[0].en)}
-return <main>
-<header className="header"><div className="shell nav"><a className="brand" href="#" onClick={()=>{setCategory("All");setQuery("")}}><span className="logo">S<span>4</span>U</span><small>Sudan for You</small></a><nav className={menu?"links open":"links"}><a href="#services">{t("الخدمات","Services")}</a><a href="#professionals">{t("الحرفيون","Professionals")}</a><a href="#how">{t("كيف تعمل","How it works")}</a></nav><div className="navright"><button className="language" onClick={()=>setLang(ar?"en":"ar")}>🌐 {ar?"English":"العربية"}</button><button className="outline" onClick={()=>alert(t("تسجيل الحرفيين قادم قريباً — نسخة تجريبية","Professional registration coming soon — demo"))}>{t("انضم كحرفي","Join as a pro")}</button><button className="menubtn" onClick={()=>setMenu(!menu)}><Menu size={22}/></button></div></div></header>
-<section className="hero"><div className="shell heroInner"><div className="eyebrow">✦ {t("خدمات موثوقة في السودان","Trusted services in Sudan")}</div><h1>{t("كل خدمات بيتك،","Your home,")}<br/><em>{t("في مكان واحد.","taken care of.")}</em></h1><p>{t("اكتشف حرفيين موثوقين بالقرب منك. قارن الأسعار، شاهد التقييمات، واختر الأنسب ليك.","Find reliable local professionals. Compare prices, explore reviews, and choose the right person for the job.")}</p><div className="searchbar"><Search size={22} color="#8290a0"/><input aria-label="Search" placeholder={t("شنو الخدمة البتفتش عليها؟","What service do you need?")} value={query} onChange={e=>setQuery(e.target.value)}/><button onClick={()=>document.getElementById("professionals")?.scrollIntoView({behavior:"smooth"})}>{t("ابحث الآن","Search now")} {ar?<ArrowLeft size={18}/>:<ArrowRight size={18}/>}</button></div><div className="heroStats"><span><ShieldCheck size={18}/> {t("حرفيون موثوقون","Verified professionals")}</span><span><Star size={18}/> {t("تقييمات العملاء","Customer reviews")}</span><span><MapPin size={18}/> {t("في منطقتك","In your area")}</span></div></div><div className="decor decor1"/><div className="decor decor2"/></section>
-<section className="shell section" id="services"><div className="sectionHead"><div><span className="overline">{t("اكتشف","EXPLORE")}</span><h2>{t("شنو الخدمة البتحتاجها؟","What can we help with?")}</h2><p>{t("اختار نوع الخدمة ولقى الحرفي المناسب","Choose a service to find the right professional")}</p></div><button className="textbutton" onClick={()=>{setCategory("All");document.getElementById("professionals")?.scrollIntoView({behavior:"smooth"})}}>{t("عرض الكل","View all")} {ar?<ArrowLeft size={17}/>:<ArrowRight size={17}/>}</button></div><div className="categories">{categories.map(({en,ar:arabic,Icon},i)=><button className={"category "+(category===en?"active":"")} key={en} onClick={()=>{setCategory(category===en?"All":en);document.getElementById("professionals")?.scrollIntoView({behavior:"smooth"})}}><span className={"catIcon c"+i}><Icon size={26} strokeWidth={1.8}/></span><strong>{ar?arabic:en}</strong><span className="catArrow">{ar?"←":"→"}</span></button>)}</div></section>
-<section className="soft" id="professionals"><div className="shell section"><div className="sectionHead"><div><span className="overline">{t("أهل الخبرة","OUR PROFESSIONALS")}</span><h2>{t("تعرّف على الحرفيين","Meet our professionals")}</h2><p>{t("اختار بنفسك حسب التخصص والموقع والسعر","Browse by specialty, location and price")}</p></div><div className="filters"><select aria-label="Location" value={area} onChange={e=>setArea(e.target.value)}><option value="All">{t("كل المناطق","All areas")}</option><option value="Khartoum">{t("الخرطوم","Khartoum")}</option><option value="Omdurman">{t("أم درمان","Omdurman")}</option><option value="Bahri">{t("بحري","Bahri")}</option></select></div></div><div className="cards">{filtered.map(w=><article className="worker" key={w.id}><div className="workerTop"><div className="avatar" style={{background:w.color}}>{w.initials}</div><div><h3>{ar?w.ar:w.name}</h3><div className="muted">{ar?w.tradeAr:w.trade}</div><div className="location"><MapPin size={14}/>{ar?w.areaAr:w.area}</div></div></div><div className="workerMeta"><span className="rating"><Star size={15} fill="#e8a637" color="#e8a637"/> {w.rating} <span className="muted">({w.reviews})</span></span>{w.verified&&<span className="verified"><ShieldCheck size={15}/>{t("موثّق","Verified")}</span>}</div><div className="workerFoot"><div><small>{t("يبدأ من","Starting at")}</small><strong>${w.price}</strong></div><button onClick={()=>openWorker(w)}>{t("عرض الملف","View profile")} {ar?<ArrowLeft size={16}/>:<ArrowRight size={16}/>}</button></div></article>)}</div>{filtered.length===0&&<div className="empty">{t("ما لقينا نتائج. جرّب بحث تاني.","No results. Try a different search.")}</div>}<div className="demoNote">{t("تنبيه: جميع الأسماء والأسعار والتقييمات هنا بيانات تجريبية وليست خدمات حقيقية.","Demo only: All profiles, prices and ratings are fictional and no real bookings are accepted.")}</div></div></section>
-<section className="shell section" id="how"><div className="sectionHead"><div><span className="overline">{t("بكل سهولة","SIMPLE STEPS")}</span><h2>{t("كيف تشتغل S4U؟","How S4U works")}</h2></div></div><div className="steps"><div><b>01</b><h3>{t("ابحث","Search")}</h3><p>{t("اختار الخدمة والمنطقة","Choose your service and area")}</p></div><div><b>02</b><h3>{t("قارن","Compare")}</h3><p>{t("شوف الملفات والأسعار والتقييمات","Browse profiles, prices and reviews")}</p></div><div><b>03</b><h3>{t("اطلب عرض","Request")}</h3><p>{t("اختار سعر ثابت أو اطلب عرض خاص","Choose a fixed price or request a quote")}</p></div></div></section>
-<footer><div className="shell foot"><div><strong className="logo">S<span>4</span>U</strong><p>Sudan for You · {t("خدماتك في مكان واحد","Services made simple")}</p></div><small>© 2026 S4U · {t("نسخة تجريبية","Prototype")}</small></div></footer>
-{selected&&<div className="overlay" onClick={()=>setSelected(null)}><div className="modal" role="dialog" aria-modal="true" onClick={e=>e.stopPropagation()}><button className="close" onClick={()=>setSelected(null)} aria-label="Close"><X size={22}/></button><div className="modalHeader"><div className="avatar large" style={{background:selected.color}}>{selected.initials}</div><div><h2>{ar?selected.ar:selected.name}</h2><p>{ar?selected.tradeAr:selected.trade} · {ar?selected.areaAr:selected.area}</p><span className="rating"><Star size={15} fill="#e8a637" color="#e8a637"/> {selected.rating} ({selected.reviews})</span></div></div>{requested?<div className="success"><CheckCircle2 size={40}/><h3>{t("تم إعداد الطلب التجريبي","Demo request prepared")}</h3><p>{t("هذا نموذج تجريبي فقط. لم يتم إرسال أي طلب أو حفظ بياناتك.","This is a prototype. No request was sent and your data was not stored.")}</p><button onClick={()=>setSelected(null)}>{t("إغلاق","Close")}</button></div>:<><h3>{t("الخدمات والأسعار","Services & pricing")}</h3><div className="serviceOptions">{selected.services.map(s=><label key={s.en} className={service===s.en?"chosen":""}><input type="radio" checked={service===s.en} onChange={()=>setService(s.en)}/><span>{ar?s.ar:s.en}</span><strong>{s.price?`$${s.price}`:t("عرض سعر","Get quote")}</strong></label>)}</div><h3>{t("أرسل طلبك","Send a request")}</h3><form onSubmit={e=>{e.preventDefault();setRequested(true)}}><label>{t("رقم التواصل","Contact number")}<input required placeholder="+249..." value={contact} onChange={e=>setContact(e.target.value)}/></label><label>{t("وصف الشغل","Describe the job")}<textarea required rows={3} placeholder={t("اشرح المطلوب...","Tell us what you need...")} value={description} onChange={e=>setDescription(e.target.value)}/></label><button type="submit" className="submit">{t("متابعة (تجريبي)","Continue (demo)")}</button></form><p className="demoNote">{t("لن يتم إرسال أو تخزين هذه البيانات.","No data is transmitted or stored.")}</p></>}</div></div>}
-</main>}
+"use client";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { Search, MapPin, ShieldCheck, Eye, ClipboardCheck, MessageSquareText, Briefcase, UserPlus } from "lucide-react";
+import { useLang } from "@/lib/i18n";
+import { CATEGORIES, CITIES, DEMO_PROS } from "@/lib/data";
+import { Arrow, CategoryIcon, ProCard } from "@/components/ui";
+
+export default function Home() {
+  const { ar, t } = useLang();
+  const [category, setCategory] = useState("all");
+  const [city, setCity] = useState("all");
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return DEMO_PROS.filter((p) => {
+      if (category !== "all" && p.category !== category) return false;
+      if (city !== "all" && !p.areas.includes(city)) return false;
+      if (!q) return true;
+      const c = CATEGORIES[p.category];
+      const hay = [p.name.en, p.name.ar, c.en, c.ar, CITIES[p.city].en, CITIES[p.city].ar, ...p.services.flatMap((s) => [s.en, s.ar])].join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+  }, [category, city, query]);
+
+  const scrollToPros = () => document.getElementById("professionals")?.scrollIntoView({ behavior: "smooth" });
+
+  return (
+    <>
+      <section className="hero">
+        <div className="shell heroInner">
+          <div className="eyebrow">✦ {t("منصة جديدة لخدمات البيوت في السودان", "A new way to find home services in Sudan")}</div>
+          <h1>{t("كل خدمات بيتك،", "Your home,")}<br /><em>{t("في مكان واحد.", "taken care of.")}</em></h1>
+          <p>{t("لاقي حرفيين في منطقتك، قارن الخدمات والأسعار واطلب عرض سعر.", "Find local professionals, compare services and prices, and request a quote.")}</p>
+          <form className="searchbar" onSubmit={(e) => { e.preventDefault(); scrollToPros(); }}>
+            <Search size={22} color="#8290a0" />
+            <input aria-label={t("بحث", "Search")} placeholder={t("شنو الخدمة البتفتش ليها؟", "What service do you need?")} value={query} onChange={(e) => setQuery(e.target.value)} />
+            <button type="submit">{t("ابحث", "Search")} <Arrow size={18} /></button>
+          </form>
+          <div className="heroStats">
+            <span><Briefcase size={18} /> {t("خبرة عملية معترف بيها", "Hands-on experience counts")}</span>
+            <span><MapPin size={18} /> {t("بحث حسب المنطقة", "Search by area")}</span>
+            <span><ShieldCheck size={18} /> {t("تحقق قبل أول طلب ملزم", "Checks before the first binding job")}</span>
+          </div>
+        </div>
+        <div className="decor decor1" />
+        <div className="decor decor2" />
+      </section>
+
+      <section className="shell section" id="services">
+        <div className="sectionHead">
+          <div>
+            <span className="overline">{t("اكتشف", "EXPLORE")}</span>
+            <h2>{t("شنو الخدمة البتحتاجها؟", "What can we help with?")}</h2>
+            <p>{t("اختار نوع الخدمة ولاقي الحرفي المناسب", "Choose a service to find the right professional")}</p>
+          </div>
+          <button className="textbutton" onClick={() => { setCategory("all"); scrollToPros(); }}>{t("عرض الكل", "View all")} <Arrow size={17} /></button>
+        </div>
+        <div className="categories">
+          {Object.entries(CATEGORIES).map(([key, c], i) => (
+            <button key={key} className={"category " + (category === key ? "active" : "")} aria-pressed={category === key}
+              onClick={() => { setCategory(category === key ? "all" : key); scrollToPros(); }}>
+              <span className={"catIcon c" + i}><CategoryIcon category={key} /></span>
+              <strong>{ar ? c.ar : c.en}</strong>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="soft" id="professionals">
+        <div className="shell section">
+          <div className="sectionHead">
+            <div>
+              <span className="overline">{t("أهل الصنعة", "PROFESSIONALS")}</span>
+              <h2>{t("اتعرّف على الحرفيين", "Meet the professionals")}</h2>
+              <p>{t("الملفات دي أمثلة توضيحية لحدي ما يسجّل حرفيين حقيقيين.", "These are example profiles until real professionals sign up.")}</p>
+            </div>
+            <div className="filters">
+              <select aria-label={t("المنطقة", "Area")} value={city} onChange={(e) => setCity(e.target.value)}>
+                <option value="all">{t("كل المناطق", "All areas")}</option>
+                {Object.entries(CITIES).map(([k, c]) => <option key={k} value={k}>{ar ? c.ar : c.en}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="cards">{filtered.map((p) => <ProCard key={p.id} p={p} />)}</div>
+          {filtered.length === 0 && <div className="empty">{t("ما لقينا نتائج. جرّب بحث تاني.", "No results. Try a different search.")}</div>}
+          <div className="joinBox">
+            <div>
+              <h3>{t("إنت حرفي؟", "Are you a professional?")}</h3>
+              <p>{t("التسجيل مجاني. اعرض شغلك وحدد أسعارك براك. الخبرة العملية بتتحسب.", "Joining is free. Show your work and set your own prices. Practical experience counts.")}</p>
+            </div>
+            <Link className="btnPrimary" href="/register/pro"><UserPlus size={18} /> {t("سجّل كحرفي", "Join as a pro")}</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="shell section" id="trust">
+        <div className="sectionHead">
+          <div>
+            <span className="overline">{t("نظام الثقة المخطط", "OUR TRUST ROADMAP")}</span>
+            <h2>{t("الثقة بتبدأ بالوضوح", "Trust starts with transparency")}</h2>
+            <p>{t("كدا بنخطط نحمي العملاء والحرفيين لما الخدمة تبدأ فعلياً.", "This is how we plan to protect customers and professionals once the real service launches.")}</p>
+          </div>
+        </div>
+        <div className="trustGrid">
+          <article><span className="trustIcon"><ShieldCheck size={24} /></span><h3>{t("التحقق من الهوية", "Identity checks")}</h3><p>{t("أي زول بيقدر يسجّل، لكن قبل أول طلب ملزم لازم يكمّل التحقق المطلوب.", "Anyone can sign up, but the required checks must be completed before the first binding job.")}</p></article>
+          <article><span className="trustIcon"><Eye size={24} /></span><h3>{t("صور شغل ومراجع", "Work samples & references")}</h3><p>{t("صور الشغل القديم والمراجع، من غير ما نخلط بين التحقق من الهوية والمهارة.", "Past work and references — without confusing identity checks with skill.")}</p></article>
+          <article><span className="trustIcon"><ClipboardCheck size={24} /></span><h3>{t("S4U Protected — مخطط", "S4U Protected — planned")}</h3><p>{t("خدمة اختيارية مستقبلية: موظف من S4U يوثّق الشغل في الموقع. ما عندو صلاحيات شرطة.", "A future optional service: an S4U staff member documents the job on site. No police powers.")}</p></article>
+          <article><span className="trustIcon"><MessageSquareText size={24} /></span><h3>{t("دعم عند المشاكل", "Dispute support")}</h3><p>{t("طريقة مخططة لتسجيل الشكاوي والمساعدة في حلها.", "A planned process for recording complaints and helping resolve them.")}</p></article>
+        </div>
+        <p className="trustDisclaimer">{t("الميزات دي مخططة ولسه ما اتفعّلت. حالياً S4U ما بتقدّم أي ضمان أو تأمين أو تحقق فعلي.", "These features are planned, not active. S4U currently provides no guarantee, insurance or real-world verification.")}</p>
+      </section>
+
+      <section className="shell section" id="how">
+        <div className="sectionHead"><div><span className="overline">{t("بكل سهولة", "SIMPLE STEPS")}</span><h2>{t("S4U بتشتغل كيف؟", "How S4U works")}</h2></div></div>
+        <div className="steps">
+          <div><b>01</b><h3>{t("ابحث", "Search")}</h3><p>{t("اختار الخدمة والمنطقة", "Choose your service and area")}</p></div>
+          <div><b>02</b><h3>{t("قارن", "Compare")}</h3><p>{t("شوف الملفات والخبرة والأسعار", "Compare profiles, experience and prices")}</p></div>
+          <div><b>03</b><h3>{t("اطلب", "Request")}</h3><p>{t("سعر ثابت أو اطلب عرض سعر", "Fixed price or request a quote")}</p></div>
+        </div>
+      </section>
+    </>
+  );
+}
